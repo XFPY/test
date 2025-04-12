@@ -21,7 +21,7 @@ void clear_screen() {
 
 void tampilkan_menu() {
     printf("==============================================\n");
-    printf("         Selamat Datang di Toko SKENSA\n");
+    printf("         Selamat Datang di Toko HIDEO\n");
     printf("==============================================\n");
     printf("| No | Barang          | Harga               |\n");
     printf("==============================================\n");
@@ -76,7 +76,7 @@ void simpan_struk(Produk *produk, int n, int total_harga, int total_diskon, int 
     char waktu[100];
     strftime(waktu, sizeof(waktu), "%A, %d-%m-%Y %H:%M:%S", tm_info);
     
-    fprintf(fp, "======================= STRUK TOKO SKENSA =======================\n");
+    fprintf(fp, "======================= STRUK TOKO HIDEO =======================\n");
     fprintf(fp, "| Barang             | Jumlah | Harga  | Total     | Diskon    |\n");
     fprintf(fp, "=================================================================\n");
 
@@ -114,7 +114,7 @@ void tampilkan_struk(Produk *produk, int n, int total_harga, int total_diskon, i
     char waktu[100];
     strftime(waktu, sizeof(waktu), "%A, %d-%m-%Y %H:%M:%S", tm_info);
 
-    printf("======================= STRUK TOKO SKENSA =======================\n");
+    printf("======================= STRUK TOKO HIDEO =======================\n");
     printf("| Barang             | Jumlah | Harga  | Total     | Diskon    |\n");
     printf("=================================================================\n");
 
@@ -158,9 +158,11 @@ int main() {
         scanf("%d", &pilihan);
 
         if (pilihan >= 1 && pilihan <= 5) {
+            int tambahan_jumlah;
             printf("Masukkan jumlah %s: ", produk[pilihan - 1].nama);
-            scanf("%d", &produk[pilihan - 1].jumlah);
+            scanf("%d", &tambahan_jumlah);
 
+            produk[pilihan - 1].jumlah += tambahan_jumlah;
             produk[pilihan - 1].diskon = hitung_diskon(produk[pilihan - 1].jumlah);
             produk[pilihan - 1].total = produk[pilihan - 1].harga * produk[pilihan - 1].jumlah;
 
@@ -219,5 +221,5 @@ int main() {
         }
     }
 
-    return 0;
+	return 0;
 }
