@@ -63,18 +63,19 @@ void buat_id_pesanan(char *id) {
 
 void simpan_struk(Produk *produk, int n, int total_harga, int total_diskon, int bayar, char *id_pesanan) {
     char filename[100];
-    sprintf(filename, "struk_%s.txt", id_pesanan); // Nama file pakai ID pesanan
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+    strftime(filename, sizeof(filename), "struk_%Y-%m-%d_%H-%M-%S.txt", tm_info);
+
     FILE *fp = fopen(filename, "w");
 
     int tagihan = total_harga - total_diskon;
     int kembalian = bayar - tagihan;
 
-    time_t t = time(NULL);
-    struct tm *tm_info = localtime(&t);
     char waktu[100];
     strftime(waktu, sizeof(waktu), "%A, %d-%m-%Y %H:%M:%S", tm_info);
     
-    fprintf(fp, "======================= STRUK TOKO HIDEO =======================\n");
+    fprintf(fp, "======================= STRUK TOKO SKENSA =======================\n");
     fprintf(fp, "ID Pesanan: %s\n", id_pesanan);
     fprintf(fp, "| Barang             | Jumlah | Harga  | Total     | Diskon    |\n");
     fprintf(fp, "=================================================================\n");
@@ -107,13 +108,8 @@ void tampilkan_struk(Produk *produk, int n, int total_harga, int total_diskon, i
     int tagihan = total_harga - total_diskon;
     int kembalian = bayar - tagihan;
 
-    time_t t = time(NULL);
-    struct tm *tm_info = localtime(&t);
-    char waktu[100];
-    strftime(waktu, sizeof(waktu), "%A, %d-%m-%Y %H:%M:%S", tm_info);
-
-    printf("======================= STRUK TOKO SKENSA =======================\n");
-    printf("ID Pesanan: %s\n", id_pesanan);
+    printf("======================= STRUK TOKO SKENSA ========================\n");
+    printf("|ID Pesanan: %s|\n", id_pesanan);
     printf("| Barang             | Jumlah | Harga  | Total     | Diskon    |\n");
     printf("=================================================================\n");
 
@@ -134,7 +130,6 @@ void tampilkan_struk(Produk *produk, int n, int total_harga, int total_diskon, i
     printf("Tagihan     : Rp. %d\n", tagihan);
     printf("Pembayaran  : Rp. %d\n", bayar);
     printf("Kembalian   : Rp. %d\n", kembalian);
-    printf("Tanggal dan Waktu: %s\n", waktu); 
     printf("=================================================================\n");
 }
 
@@ -151,6 +146,7 @@ int main() {
 
     int pilihan, bayar;
     int total_harga, total_diskon;
+    char id_pesanan[50];  // Pastikan ID pesanan dideklarasikan di luar loop
 
     while (1) {
         clear_screen();
@@ -183,21 +179,24 @@ int main() {
             urutkan_produk(produk, 5);
             printf("\nTotal yang harus dibayar: Rp. %d\n", tagihan);
 
+            // Buat ID pesanan sebelum mulai proses pembayaran
+            buat_id_pesanan(id_pesanan);
+
             int total_bayar = 0;
             while (total_bayar < tagihan) {
                 int tambahan;
-                printf("Masukkan pembayaran (sisa tagihan: Rp. %d): Rp. ", tagihan - total_bayar);
+                printf("Masukkan pembayaran: Rp. ");
                 scanf("%d", &tambahan);
-                total_bayar += tambahan;
 
-                if (total_bayar < tagihan) {
-                    printf("Uang masih kurang, sisa kekurangan: Rp. %d\n", tagihan - total_bayar);
+                if (tambahan <= 0) {
+                    printf("Pembayaran tidak valid! Masukkan jumlah yang lebih besar.\n");
+                } else if (tambahan < tagihan - total_bayar) {
+                    printf("Uang tidak cukup! Silakan masukkan lagi.\n");
+                } else {
+                    total_bayar += tambahan;
                 }
             }
             bayar = total_bayar;
-
-            char id_pesanan[50];
-            buat_id_pesanan(id_pesanan);
 
             clear_screen();
             tampilkan_struk(produk, 5, total_harga, total_diskon, bayar, id_pesanan);
