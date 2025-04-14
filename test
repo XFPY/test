@@ -56,9 +56,9 @@ void urutkan_produk(Produk *produk, int n) {
 }
 
 void buat_id_pesanan(char *id) {
-    time_t t = time(NULL);
-    struct tm *tm_info = localtime(&t);
-    sprintf(id, "HID-%02d%02d%02d%02d", tm_info->tm_hour, tm_info->tm_min, tm_info->tm_sec, rand() % 100);
+    srand(time(NULL));  
+    int angka_acak = rand() % 900000 + 100000; 
+    sprintf(id, "%d", angka_acak);
 }
 
 void reset_data(Produk *produk, int n) {
@@ -93,7 +93,7 @@ void cetak_struk_ke_file(char *id_pesanan, Produk produk[], int total_harga, int
     fprintf(file, "|             Jl. HOS Cokroaminoto No. 84, Denpasar                           |\n");
     fprintf(file, "|                                BALI                                         |\n");
 	fprintf(file, "|                         Telp: 0816285791                                    |\n");
-    fprintf(file, "| ID Struk : %s                                                     |\n", id_pesanan);
+    fprintf(file, "| ID Struk : %s                                                           |\n", id_pesanan);
     fprintf(file, "==============================================================================\n");
     fprintf(file, "| %-18s | %-9s | %-10s | %-9s |\n", "Nama Barang", "Harga", "Total", "Diskon");
     fprintf(file, "===============================================================================\n");
@@ -153,16 +153,16 @@ void tampilkan_rekapan(Produk produk[], int *total_harga, int *total_diskon) {
 }
 
 void tampilkan_struk_terminal(Produk produk[], int total_harga, int total_diskon, int tagihan, int bayar) {
-    char id_pesanan[50];  // Deklarasikan id_pesanan di sini
+    char id_pesanan[50];  
 
-    buat_id_pesanan(id_pesanan);  // Buat ID pesanan
+    buat_id_pesanan(id_pesanan);   
 
     printf("============================================================================\n");
     printf("|                             Toko SKENSA                                  |\n");
     printf("|             Jl. HOS Cokroaminoto No. 84, Denpasar                        |\n");
     printf("|                                BALI                                      |\n");
     printf("|                         Telp: 0816285791                                 |\n");
-    printf("| ID Struk : %s                                                  |\n", id_pesanan);
+    printf("| ID Struk : %s                                                        |\n", id_pesanan);
     printf("============================================================================\n");
     printf("| %-18s | %-9s | %-10s | %-9s |\n", "Nama Barang", "Harga", "Total", "Diskon");
     printf("============================================================================\n");
