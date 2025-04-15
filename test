@@ -35,8 +35,7 @@ void tampilkan_menu() {
     printf("===============================================================================\n");
     printf("| %-3s | %-20s | %-17s     |\n", "No", "Nama Barang", "Harga");
     printf("-------------------------------------------------------------------------------\n");
-    int i;
-    for (i = 0; i < MAX_PRODUCT; i++){
+    for (int i = 0; i < MAX_PRODUCT; i++) {
         printf("| %-3d | %-20s | Rp. %-17d |\n", i + 1, produk[i].nama, produk[i].harga);
     }
     printf("===============================================================================\n");
@@ -65,8 +64,8 @@ void urutkan_produk(Produk *produk, int n) {
 }
 
 void buat_id_pesanan(char *id) {
-    srand(time(NULL));  
-    int angka_acak = rand() % 900000 + 100000; 
+    srand(time(NULL));
+    int angka_acak = rand() % 900000 + 100000;
     sprintf(id, "%d", angka_acak);
 }
 
@@ -101,27 +100,23 @@ void cetak_struk_ke_file(char *id_pesanan, Produk produk[], int total_harga, int
     fprintf(file, "| %-18s | %-13s | %-12s | %-13s |\n", "Nama Barang", "Harga", "Total", "Diskon");
     fprintf(file, "===============================================================================\n");
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < MAX_PRODUCT; i++) {
         if (produk[i].jumlah > 0) {
             int subtotal = produk[i].harga * produk[i].jumlah;
             int diskon_barang = (int)(produk[i].diskon * subtotal);
             fprintf(file, "| %-18s | Rp. %-9d | Rp. %-8d | Rp. %-9d |\n",
-                produk[i].nama,
-                produk[i].harga,
-                subtotal,
-                diskon_barang
-            );
+                produk[i].nama, produk[i].harga, subtotal, diskon_barang);
         }
     }
+
     fprintf(file, "===============================================================================\n");
     fprintf(file, "| Total Harga  : Rp. %-57d |\n", total_harga);
     fprintf(file, "| Total Diskon : Rp. %-57d |\n", total_diskon);
     fprintf(file, "| Tagihan      : Rp. %-57d |\n", tagihan);
     fprintf(file, "| Pembayaran   : Rp. %-57d |\n", bayar);
-	fprintf(file, "| Kembalian    : Rp. %-57d |\n", bayar - tagihan);
-
-
+    fprintf(file, "| Kembalian    : Rp. %-57d |\n", bayar - tagihan);
     fclose(file);
+
     printf("\n>> Struk berhasil dicetak ke file: %s\n", filename);
 }
 
@@ -135,14 +130,13 @@ void tampilkan_rekapan(Produk produk[], int *total_harga, int *total_diskon) {
     printf("=============================================================================\n");
 
     int nomor = 1;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < MAX_PRODUCT; i++) {
         if (produk[i].jumlah > 0) {
             int subtotal = produk[i].harga * produk[i].jumlah;
             int diskon_barang = (int)(produk[i].diskon * subtotal);
 
             printf("| %-2d | %-6d | %-17s | Rp.%-6d | Rp.%-8d | Rp.%-7d |\n",
-                nomor++, produk[i].jumlah, produk[i].nama, produk[i].harga, subtotal, diskon_barang
-            );
+                nomor++, produk[i].jumlah, produk[i].nama, produk[i].harga, subtotal, diskon_barang);
 
             *total_harga += subtotal;
             *total_diskon += diskon_barang;
@@ -155,9 +149,8 @@ void tampilkan_rekapan(Produk produk[], int *total_harga, int *total_diskon) {
 }
 
 void tampilkan_struk_terminal(Produk produk[], int total_harga, int total_diskon, int tagihan, int bayar) {
-    char id_pesanan[50];  
-
-    buat_id_pesanan(id_pesanan);   
+    char id_pesanan[50];
+    buat_id_pesanan(id_pesanan);
 
     printf("============================================================================\n");
     printf("|                             Toko SKENSA                                  |\n");
@@ -169,7 +162,7 @@ void tampilkan_struk_terminal(Produk produk[], int total_harga, int total_diskon
     printf("| %-18s | %-9s | %-10s | %-9s |\n", "Nama Barang", "Harga", "Total", "Diskon");
     printf("============================================================================\n");
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < MAX_PRODUCT; i++) {
         if (produk[i].jumlah > 0) {
             int subtotal = produk[i].harga * produk[i].jumlah;
             int diskon_barang = (int)(produk[i].diskon * subtotal);
@@ -210,14 +203,11 @@ void proses_pembayaran(Produk produk[]) {
     cetak_struk_ke_file(id_pesanan, produk, total_harga, total_diskon, tagihan, bayar);
 
     printf("\n>> Tekan Enter untuk kembali ke menu...");
-    getchar();
-    getchar();
+    getchar(); getchar();
 }
 
 int main() {
     srand(time(NULL));
-    
-
     int pilihan;
 
     while (1) {
@@ -226,7 +216,7 @@ int main() {
         printf("\n>> Pilih menu: ");
         scanf("%d", &pilihan);
 
-        if (pilihan >= 1 && pilihan <= 5) {
+        if (pilihan >= 1 && pilihan <= MAX_PRODUCT) {
             int tambahan_jumlah;
             printf(">> Masukkan jumlah untuk %s: ", produk[pilihan - 1].nama);
             scanf("%d", &tambahan_jumlah);
@@ -234,15 +224,19 @@ int main() {
             produk[pilihan - 1].jumlah += tambahan_jumlah;
             produk[pilihan - 1].diskon = hitung_diskon(produk[pilihan - 1].jumlah);
             produk[pilihan - 1].total = produk[pilihan - 1].harga * produk[pilihan - 1].jumlah;
+
         } else if (pilihan == 99) {
             proses_pembayaran(produk);
+
         } else if (pilihan == 55) {
-            reset_data(produk, 5);
+            reset_data(produk, MAX_PRODUCT);
             printf(">> Tekan Enter untuk kembali ke menu...");
             getchar(); getchar();
+
         } else if (pilihan == 0) {
             printf(">> Terima kasih telah berbelanja!\n");
             break;
+
         } else {
             printf(">> Pilihan tidak valid!\n");
             printf(">> Tekan Enter untuk kembali...");
