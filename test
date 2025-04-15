@@ -70,12 +70,6 @@ void reset_data(Produk *produk, int n) {
     printf("\n>> Data berhasil direset!\n");
 }
 
-char* format_rupiah(int jumlah) {
-    static char str[50];
-    sprintf(str, "Rp. %d", jumlah);
-    return str;
-}
-
 void cetak_struk_ke_file(char *id_pesanan, Produk produk[], int total_harga, int total_diskon, int tagihan, int bayar) {
     time_t t = time(NULL);
     struct tm *tm_info = localtime(&t);
@@ -92,7 +86,7 @@ void cetak_struk_ke_file(char *id_pesanan, Produk produk[], int total_harga, int
     fprintf(file, "|                             Toko SKENSA                                     |\n");
     fprintf(file, "|             Jl. HOS Cokroaminoto No. 84, Denpasar                           |\n");
     fprintf(file, "|                                BALI                                         |\n");
-	fprintf(file, "|                         Telp: 0816285791                                    |\n");
+    fprintf(file, "|                         Telp: 0816285791                                    |\n");
     fprintf(file, "| ID Struk : %s                                                           |\n", id_pesanan);
     fprintf(file, "==============================================================================\n");
     fprintf(file, "| %-18s | %-9s | %-10s | %-9s |\n", "Nama Barang", "Harga", "Total", "Diskon");
@@ -102,22 +96,21 @@ void cetak_struk_ke_file(char *id_pesanan, Produk produk[], int total_harga, int
         if (produk[i].jumlah > 0) {
             int subtotal = produk[i].harga * produk[i].jumlah;
             int diskon_barang = (int)(produk[i].diskon * subtotal);
-            fprintf(file, "| %-18s | %-9s | %-10s | %-9s |\n",
+            fprintf(file, "| %-18s | Rp. %-9d | Rp. %-10d | Rp. %-9d |\n",
                 produk[i].nama,
-                format_rupiah(produk[i].harga),
-                format_rupiah(subtotal),
-                format_rupiah(diskon_barang)
+                produk[i].harga,
+                subtotal,
+                diskon_barang
             );
         }
     }
 
-    fprintf(file, "===============================================================================\n");
-    fprintf(file, "| Total Harga  : %-60s |\n", format_rupiah(total_harga));
-    fprintf(file, "| Total Diskon : %-60s |\n", format_rupiah(total_diskon));
-    fprintf(file, "| Tagihan      : %-60s |\n", format_rupiah(tagihan));
-    fprintf(file, "| Pembayaran   : %-60s |\n", format_rupiah(bayar));
-    fprintf(file, "| Kembalian    : %-60s |\n", format_rupiah(bayar - tagihan));
-    fprintf(file, "===============================================================================\n");
+    fprintf(file, "| Total Harga  : Rp. %-57d |\n", total_harga);
+    fprintf(file, "| Total Diskon : Rp. %-57d |\n", total_diskon);
+    fprintf(file, "| Tagihan      : Rp. %-57d |\n", tagihan);
+    fprintf(file, "| Pembayaran   : Rp. %-57d |\n", bayar);
+	fprintf(file, "| Kembalian    : Rp. %-57d |\n", bayar - tagihan);
+
 
     fclose(file);
     printf("\n>> Struk berhasil dicetak ke file: %s\n", filename);
@@ -148,8 +141,8 @@ void tampilkan_rekapan(Produk produk[], int *total_harga, int *total_diskon) {
     }
 
     printf("=============================================================================\n");
-    printf("Total Harga  = %s\n", format_rupiah(*total_harga));
-    printf("Total Diskon = %s\n", format_rupiah(*total_diskon));
+    printf("Total Harga  = Rp. %-10d\n", *total_harga);
+    printf("Total Diskon = Rp. %-10d\n", *total_diskon);
 }
 
 void tampilkan_struk_terminal(Produk produk[], int total_harga, int total_diskon, int tagihan, int bayar) {
@@ -177,11 +170,11 @@ void tampilkan_struk_terminal(Produk produk[], int total_harga, int total_diskon
     }
 
     printf("============================================================================\n");
-    printf("| Total Harga  : %-57s |\n", format_rupiah(total_harga));
-    printf("| Total Diskon : %-57s |\n", format_rupiah(total_diskon));
-    printf("| Tagihan      : %-57s |\n", format_rupiah(tagihan));
-    printf("| Pembayaran   : %-57s |\n", format_rupiah(bayar));
-    printf("| Kembalian    : %-57s |\n", format_rupiah(bayar - tagihan));
+    printf("| Total Harga  : Rp. %-53d |\n", total_harga);
+    printf("| Total Diskon : Rp. %-53d |\n", total_diskon);
+    printf("| Tagihan      : Rp. %-53d |\n", tagihan);
+    printf("| Pembayaran   : Rp. %-53d |\n", bayar);
+    printf("| Kembalian    : Rp. %-53d |\n", bayar - tagihan);
     printf("============================================================================\n");
 }
 
@@ -192,7 +185,7 @@ void proses_pembayaran(Produk produk[]) {
     int tagihan = total_harga - total_diskon;
     int bayar;
 
-    printf("\n>> Total yang harus dibayar: %s\n", format_rupiah(tagihan));
+    printf("\n>> Total yang harus dibayar: Rp. %-10d\n", tagihan);
     printf(">> Masukkan jumlah pembayaran: Rp. ");
     scanf("%d", &bayar);
 
