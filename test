@@ -89,14 +89,14 @@ void cetak_struk_ke_file(char *id_pesanan, Produk produk[], int total_harga, int
     fprintf(file, "|                         Telp: 0816285791                                    |\n");
     fprintf(file, "| ID Struk : %s                                                           |\n", id_pesanan);
     fprintf(file, "==============================================================================\n");
-    fprintf(file, "| %-18s | %-9s | %-10s | %-9s |\n", "Nama Barang", "Harga", "Total", "Diskon");
+    fprintf(file, "| %-18s | %-13s | %-12s | %-13s |\n", "Nama Barang", "Harga", "Total", "Diskon");
     fprintf(file, "===============================================================================\n");
 
     for (int i = 0; i < 5; i++) {
         if (produk[i].jumlah > 0) {
             int subtotal = produk[i].harga * produk[i].jumlah;
             int diskon_barang = (int)(produk[i].diskon * subtotal);
-            fprintf(file, "| %-18s | Rp. %-9d | Rp. %-10d | Rp. %-9d |\n",
+            fprintf(file, "| %-18s | Rp. %-9d | Rp. %-8d | Rp. %-9d |\n",
                 produk[i].nama,
                 produk[i].harga,
                 subtotal,
@@ -104,7 +104,7 @@ void cetak_struk_ke_file(char *id_pesanan, Produk produk[], int total_harga, int
             );
         }
     }
-
+    fprintf(file, "===============================================================================\n");
     fprintf(file, "| Total Harga  : Rp. %-57d |\n", total_harga);
     fprintf(file, "| Total Diskon : Rp. %-57d |\n", total_diskon);
     fprintf(file, "| Tagihan      : Rp. %-57d |\n", tagihan);
