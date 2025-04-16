@@ -1,247 +1,243 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
 
-#define MAX_PRODUCT 5
-
 typedef struct {
+    int id;
     char nama[50];
-    int harga;
-    int jumlah;
-    float diskon;
-    int total;
+    float harga;
 } Produk;
 
-Produk produk[MAX_PRODUCT] = {
-    {"Buku Tulis", 5000, 0, 0, 0},
-    {"Pensil", 2000, 0, 0, 0},
-    {"Penghapus", 1000, 0, 0, 0},
-    {"Penggaris", 1000, 0, 0, 0},
-    {"Bujur Sangkar", 500, 0, 0, 0}
+typedef struct {
+    int idrekap;
+    int jumlahrekap;
+    float hargarekap;
+    float totalrekap;
+    float diskonrekap;
+} Rekap;
+
+Rekap rekap[100];
+int jumlahItem = 0;
+
+Produk produk[] = {
+    {1, "Buku Tulis", 5000},
+    {2, "Pensil", 2000},
+    {3, "Penghapus", 1000},
+    {4, "Penggaris", 1000},
+    {5, "Bujur Sangkar", 500}
 };
 
-void clear_screen() {
-    #ifdef _WIN32
-        system("cls");
-    #else
-        system("clear");
-    #endif
-}
+int jumlahproduk = sizeof(produk) / sizeof(produk[0]);
 
-void tampilkan_menu() {
-    printf("===============================================================================\n");
-    printf("                        SELAMAT DATANG DI TOKO SKENSA                         \n");
-    printf("===============================================================================\n");
-    printf("| %-3s | %-20s | %-17s     |\n", "No", "Nama Barang", "Harga");
-    printf("-------------------------------------------------------------------------------\n");
-    for (int i = 0; i < MAX_PRODUCT; i++) {
-        printf("| %-3d | %-20s | Rp. %-17d |\n", i + 1, produk[i].nama, produk[i].harga);
+void menuutama() {
+    int i;
+    printf("Selamat Datang di Toko Skensa\n");
+    printf("Silahkan pilih barang yang Anda inginkan :\n\n");
+    printf("================================================\n");
+    printf("| %-3s | %-20s | %-15s |\n", "No.", "Barang", "Harga");
+    printf("------------------------------------------------\n");
+    for (i = 0; i < jumlahproduk; i++) {
+        printf("| %-3d | %-20s | Rp.%-12.0f |\n", produk[i].id, produk[i].nama, produk[i].harga);
     }
-    printf("===============================================================================\n");
-    printf(" 99. Struk Pembayaran\n");
-    printf(" 55. Reset Transaksi\n");
-    printf(" 00. Keluar\n");
-    printf("===============================================================================\n");
+    printf("================================================\n");
+    printf("99. Struk Pembayaran\n");
+    printf("55. Reset Pilihan\n");
+    printf("00. Keluar\n");
+    printf("================================================\n");
 }
 
-float hitung_diskon(int jumlah) {
-    if (jumlah > 5) return 0.15;
-    else if (jumlah > 3) return 0.10;
-    return 0.0;
-}
-
-void urutkan_produk(Produk *produk, int n) {
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = i + 1; j < n; j++) {
-            if (produk[j].jumlah > produk[i].jumlah) {
-                Produk temp = produk[i];
-                produk[i] = produk[j];
-                produk[j] = temp;
+void urutkanRekap() {
+    int i, j;
+    Rekap temp;
+    for (i = 0; i < jumlahItem - 1; i++) {
+        for (j = i + 1; j < jumlahItem; j++) {
+            if (rekap[i].jumlahrekap < rekap[j].jumlahrekap) {
+                temp = rekap[i];
+                rekap[i] = rekap[j];
+                rekap[j] = temp;
             }
         }
     }
 }
 
-void buat_id_pesanan(char *id) {
-    srand(time(NULL));
-    int angka_acak = rand() % 900000 + 100000;
-    sprintf(id, "%d", angka_acak);
-}
+void daftarrekap() {
+    int i;
+    float totalHarga = 0, totalDiskon = 0, totalBayar = 0;
+    urutkanRekap();
 
-void reset_data(Produk *produk, int n) {
-    for (int i = 0; i < n; i++) {
-        produk[i].jumlah = 0;
-        produk[i].diskon = 0;
-        produk[i].total = 0;
-    }
-    printf("\n>> Data berhasil direset!\n");
-}
+    printf("\nRekap Pesanan Barang\n");
+    printf("======================================================================================\n");
+    printf("| %-4s | %-6s | %-20s | %-10s  | %-12s  | %-12s  |\n",
+           "No.", "Jumlah", "Nama Barang", "Harga", "Total Harga", "Diskon");
+    printf("--------------------------------------------------------------------------------------\n");
 
-void cetak_struk_ke_file(char *id_pesanan, Produk produk[], int total_harga, int total_diskon, int tagihan, int bayar) {
-    time_t t = time(NULL);
-    struct tm *tm_info = localtime(&t);
-    char filename[100];
-    strftime(filename, sizeof(filename), "%Y-%m-%d_%H-%M-%S.txt", tm_info);
+    for (i = 0; i < jumlahItem; i++) {
+        printf("| %-4d | %-6d | %-20s | Rp.%-8.0f | Rp.%-10.0f | Rp.%-10.0f |\n",
+               i + 1,
+               rekap[i].jumlahrekap, produk[rekap[i].idrekap - 1].nama,
+               produk[rekap[i].idrekap - 1].harga, rekap[i].totalrekap, rekap[i].diskonrekap);
 
-    FILE *file = fopen(filename, "w");
-    if (!file) {
-        printf("Gagal membuat file struk!\n");
-        return;
+        totalHarga += rekap[i].totalrekap;
+        totalDiskon += rekap[i].diskonrekap;
     }
 
-    fprintf(file, "===============================================================================\n");
-    fprintf(file, "|                             Toko SKENSA                                     |\n");
-    fprintf(file, "|             Jl. HOS Cokroaminoto No. 84, Denpasar                           |\n");
-    fprintf(file, "|                                BALI                                         |\n");
-    fprintf(file, "|                         Telp: 0816285791                                    |\n");
-    fprintf(file, "| ID Struk : %s                                                           |\n", id_pesanan);
-    fprintf(file, "==============================================================================\n");
-    fprintf(file, "| %-18s | %-13s | %-12s | %-13s |\n", "Nama Barang", "Harga", "Total", "Diskon");
-    fprintf(file, "===============================================================================\n");
+    totalBayar = totalHarga - totalDiskon;
+    printf("======================================================================================\n");
+    printf("\nTotal Harga  = Rp. %.0f\n", totalHarga);
+    printf("Total Diskon = Rp. %.0f\n", totalDiskon);
+}
 
-    for (int i = 0; i < MAX_PRODUCT; i++) {
-        if (produk[i].jumlah > 0) {
-            int subtotal = produk[i].harga * produk[i].jumlah;
-            int diskon_barang = (int)(produk[i].diskon * subtotal);
-            fprintf(file, "| %-18s | Rp. %-9d | Rp. %-8d | Rp. %-9d |\n",
-                produk[i].nama, produk[i].harga, subtotal, diskon_barang);
+float hitungdiskon(int jumlahbeli, float totalHarga) {
+    if (jumlahbeli >= 3 && jumlahbeli <= 5) {
+        return totalHarga * 0.10;
+    } else if (jumlahbeli > 5) {
+        return totalHarga * 0.15;
+    }
+    return 0;
+}
+
+char* getWaktu() {
+    static char waktu[50];
+    time_t waktuSekarang = time(NULL);
+    struct tm* Infowaktu = localtime(&waktuSekarang);
+
+    strftime(waktu, sizeof(waktu), "%a %b %d %H:%M:%Y", Infowaktu);
+    return waktu;
+}
+
+void cetakStruk(float totalHarga, float totalDiskon, float bayar, float kembalian) {
+    time_t now;
+    struct tm* local;
+    time(&now);
+    local = localtime(&now);
+
+    char filename[50];
+    int i;
+    sprintf(filename, "Struk_%d-%02d-%02d_%02d%02d%02d.txt",
+            local->tm_year + 1900, local->tm_mon + 1, local->tm_mday,
+            local->tm_hour, local->tm_min, local->tm_sec);
+
+    FILE* file = fopen(filename, "w");
+
+    if (file != NULL) {
+        fprintf(file, "===========================================================\n");
+        fprintf(file, "|                        TOKO SKENSA                      |\n");
+        fprintf(file, "|           Jl. HOS Cokroaminoto No. 84, Denpasar         |\n");
+        fprintf(file, "|                            Bali                         |\n");
+        fprintf(file, "|                     Telp : 0816285791                   |\n");
+        fprintf(file, "|ID Struk : %ld                                    |\n", now);
+        fprintf(file, "|=========================================================|\n");
+
+        fprintf(file, "| %-21s | %-8s | %-10s | %-7s |\n", "Nama Barang", "Harga", "Total", "Diskon");
+        fprintf(file, "|=========================================================|\n");
+
+        for (i = 0; i < jumlahItem; i++) {
+            fprintf(file, "| %-3d x %-15s | Rp.%-5.0f | Rp.%-7.0f | Rp.%-4.0f |\n",
+                    rekap[i].jumlahrekap, produk[rekap[i].idrekap - 1].nama,
+                    produk[rekap[i].idrekap - 1].harga,
+                    rekap[i].totalrekap,
+                    rekap[i].diskonrekap);
         }
+
+        fprintf(file, "|=========================================================|\n");
+        fprintf(file, "|Total Harga  = Rp.%-10.0f                             |\n", totalHarga);
+        fprintf(file, "|Total Diskon = Rp.%-10.0f                             |\n", totalDiskon);
+        fprintf(file, "|Tagihan      = Rp.%-10.0f                             |\n", totalHarga - totalDiskon);
+        fprintf(file, "|Pembayaran   = Rp.%-10.0f                             |\n", bayar);
+        fprintf(file, "|Kembalian    = Rp.%-10.0f                             |\n", kembalian);
+        fprintf(file, "|Waktu/Hari   : %s                     |\n", getWaktu());
+        fprintf(file, "===========================================================\n");
+
+        fclose(file);
+        printf("======================================================================================\n");
+        printf("Struk telah dicetak dengan nama: %s\n", filename);
+        printf("======================================================================================\n");
+    } else {
+        printf("Gagal mencetak struk!\n");
     }
-
-    fprintf(file, "===============================================================================\n");
-    fprintf(file, "| Total Harga  : Rp. %-57d |\n", total_harga);
-    fprintf(file, "| Total Diskon : Rp. %-57d |\n", total_diskon);
-    fprintf(file, "| Tagihan      : Rp. %-57d |\n", tagihan);
-    fprintf(file, "| Pembayaran   : Rp. %-57d |\n", bayar);
-    fprintf(file, "| Kembalian    : Rp. %-57d |\n", bayar - tagihan);
-    fclose(file);
-
-    printf("\n>> Struk berhasil dicetak ke file: %s\n", filename);
 }
 
-void tampilkan_rekapan(Produk produk[], int *total_harga, int *total_diskon) {
-    *total_harga = 0;
-    *total_diskon = 0;
+void prosesPembayaran(float totalHarga, float totalDiskon) {
+    float bayar, kembalian;
+    float totalBayar = totalHarga - totalDiskon;
 
-    clear_screen();
-    printf("============================= REKAPAN PESANAN ===============================\n");
-    printf("| No | Jumlah | Nama Barang       | Harga     | Total Harga | Diskon     |\n");
-    printf("=============================================================================\n");
+    printf("Total Bayar  = Rp. %.0f\n", totalBayar);
+    printf("======================================================================================\n");
 
-    int nomor = 1;
-    for (int i = 0; i < MAX_PRODUCT; i++) {
-        if (produk[i].jumlah > 0) {
-            int subtotal = produk[i].harga * produk[i].jumlah;
-            int diskon_barang = (int)(produk[i].diskon * subtotal);
+    do {
+        printf("\nMasukkan Uang Pembayaran: Rp.");
+        scanf("%f", &bayar);
 
-            printf("| %-2d | %-6d | %-17s | Rp.%-6d | Rp.%-8d | Rp.%-7d |\n",
-                nomor++, produk[i].jumlah, produk[i].nama, produk[i].harga, subtotal, diskon_barang);
-
-            *total_harga += subtotal;
-            *total_diskon += diskon_barang;
+        if (bayar < totalBayar) {
+            printf("Uang Tidak Cukup! Silakan masukkan jumlah yang benar.\n");
         }
-    }
+    } while (bayar < totalBayar);
 
-    printf("=============================================================================\n");
-    printf("Total Harga  = Rp. %-10d\n", *total_harga);
-    printf("Total Diskon = Rp. %-10d\n", *total_diskon);
+    kembalian = bayar - totalBayar;
+    printf("\nKembalian Anda: Rp.%.0f\n", kembalian);
+    cetakStruk(totalHarga, totalDiskon, bayar, kembalian);
 }
 
-void tampilkan_struk_terminal(Produk produk[], int total_harga, int total_diskon, int tagihan, int bayar) {
-    char id_pesanan[50];
-    buat_id_pesanan(id_pesanan);
-
-    printf("============================================================================\n");
-    printf("|                             Toko SKENSA                                  |\n");
-    printf("|             Jl. HOS Cokroaminoto No. 84, Denpasar                        |\n");
-    printf("|                                BALI                                      |\n");
-    printf("|                         Telp: 0816285791                                 |\n");
-    printf("| ID Struk : %s                                                        |\n", id_pesanan);
-    printf("============================================================================\n");
-    printf("| %-18s | %-9s | %-10s | %-9s |\n", "Nama Barang", "Harga", "Total", "Diskon");
-    printf("============================================================================\n");
-
-    for (int i = 0; i < MAX_PRODUCT; i++) {
-        if (produk[i].jumlah > 0) {
-            int subtotal = produk[i].harga * produk[i].jumlah;
-            int diskon_barang = (int)(produk[i].diskon * subtotal);
-            printf("| %-17s | Rp.%-7d | Rp.%-7d | Rp.%-6d |\n",
-                   produk[i].nama, produk[i].harga, subtotal, diskon_barang);
-        }
-    }
-
-    printf("============================================================================\n");
-    printf("| Total Harga  : Rp. %-53d |\n", total_harga);
-    printf("| Total Diskon : Rp. %-53d |\n", total_diskon);
-    printf("| Tagihan      : Rp. %-53d |\n", tagihan);
-    printf("| Pembayaran   : Rp. %-53d |\n", bayar);
-    printf("| Kembalian    : Rp. %-53d |\n", bayar - tagihan);
-    printf("============================================================================\n");
+void clear() {
+    system("cls");
 }
 
-void proses_pembayaran(Produk produk[]) {
-    int total_harga, total_diskon;
-    tampilkan_rekapan(produk, &total_harga, &total_diskon);
-
-    int tagihan = total_harga - total_diskon;
-    int bayar;
-
-    printf("\n>> Total yang harus dibayar: Rp. %-10d\n", tagihan);
-    printf(">> Masukkan jumlah pembayaran: Rp. ");
-    scanf("%d", &bayar);
-
-    while (bayar < tagihan) {
-        printf(">> Uang tidak cukup! Masukkan lagi: Rp. ");
-        scanf("%d", &bayar);
-    }
-
-    char id_pesanan[50];
-    buat_id_pesanan(id_pesanan);
-
-    tampilkan_struk_terminal(produk, total_harga, total_diskon, tagihan, bayar);
-    cetak_struk_ke_file(id_pesanan, produk, total_harga, total_diskon, tagihan, bayar);
-
-    printf("\n>> Tekan Enter untuk kembali ke menu...");
-    getchar(); getchar();
+void resetPilihan() {
+    jumlahItem = 0;
+    printf("Pilihan telah direset!\n");
 }
 
 int main() {
-    srand(time(NULL));
-    int pilihan;
+    int pilihan, jumlahbeli, ada, i;
+    float totalHarga = 0, totalDiskon = 0;
 
+    menuutama();
     while (1) {
-        clear_screen();
-        tampilkan_menu();
-        printf("\n>> Pilih menu: ");
+        printf("Input pilihan yang Anda inginkan: ");
         scanf("%d", &pilihan);
+        ada = 0;
 
-        if (pilihan >= 1 && pilihan <= MAX_PRODUCT) {
-            int tambahan_jumlah;
-            printf(">> Masukkan jumlah untuk %s: ", produk[pilihan - 1].nama);
-            scanf("%d", &tambahan_jumlah);
-
-            produk[pilihan - 1].jumlah += tambahan_jumlah;
-            produk[pilihan - 1].diskon = hitung_diskon(produk[pilihan - 1].jumlah);
-            produk[pilihan - 1].total = produk[pilihan - 1].harga * produk[pilihan - 1].jumlah;
-
-        } else if (pilihan == 99) {
-            proses_pembayaran(produk);
-
+        if (pilihan == 99) {
+            clear();
+            if (jumlahItem > 0) {
+                daftarrekap();
+                for (i = 0; i < jumlahItem; i++) {
+                    totalHarga += rekap[i].totalrekap;
+                    totalDiskon += rekap[i].diskonrekap;
+                }
+                prosesPembayaran(totalHarga, totalDiskon);
+                break;
+            } else {
+                menuutama();
+                printf("Daftar Rekap Kosong\n");
+            }
         } else if (pilihan == 55) {
-            reset_data(produk, MAX_PRODUCT);
-            printf(">> Tekan Enter untuk kembali ke menu...");
-            getchar(); getchar();
-
+            clear();
+            menuutama();
+            resetPilihan();
         } else if (pilihan == 0) {
-            printf(">> Terima kasih telah berbelanja!\n");
-            break;
+            printf("Terimakasih telah berbelanja\n");
+            return 0;
+        } else if (pilihan >= 1 && pilihan <= jumlahproduk) {
+            do {
+                printf("Masukkan jumlah %s yang ingin dibeli : ", produk[pilihan - 1].nama);
+                scanf("%d", &jumlahbeli);
 
+                if (jumlahbeli <= 0) {
+                    printf("Jumlah tidak valid! Harap masukkan jumlah yang benar.\n");
+                }
+            } while (jumlahbeli <= 0);
+
+            printf("================================================\n");
+            rekap[jumlahItem].idrekap = pilihan;
+            rekap[jumlahItem].jumlahrekap = jumlahbeli;
+            rekap[jumlahItem].totalrekap = produk[pilihan - 1].harga * jumlahbeli;
+            rekap[jumlahItem].diskonrekap = hitungdiskon(jumlahbeli, rekap[jumlahItem].totalrekap);
+            jumlahItem++;
         } else {
-            printf(">> Pilihan tidak valid!\n");
-            printf(">> Tekan Enter untuk kembali...");
-            getchar(); getchar();
+            printf("Pilihan tidak valid\n");
         }
     }
+
     return 0;
 }
