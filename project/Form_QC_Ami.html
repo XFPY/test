@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form QC AMI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <style>
+        /* Hilangkan scrollbar */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #4e73df;
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .sidebar .nav-link {
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: #2c5bd4;
+        }
+
+        /* Container utama */
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            background: #f0f2f5;
+        }
+
+        /* Form Card */
+        .form-card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Input Form */
+        .form-card input,
+        .form-card select,
+        .form-card textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        /* Button */
+        .form-card button {
+            width: 100%;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar-menu"> "><div class="w-100 text-center">
+        <img src="data:image/png;base64,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
+ " alt="QC AMI" width="110" height="50" class="mb-3 mt-2">
+    </div>
+    <a class="nav-link" href="dashboard.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a class="nav-link" href="Form_QC_Ami.html"><i class="fas fa-file-alt"></i> Form QC AMI</a>
+    <a class="nav-link" href="Data_QC_Ami.html"><i class="fas fa-database"></i> Data QC AMI</a>
+    <a href="#" id="logoutButton" class="nav-link">
+    <i class="bi bi-box-arrow-left"></i> Log Out</a>
+</div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="form-card">
+          <h2 class="text-center">Form QC AMI</h2>
+          <form id="dataForm">
+            <div class="mb-3">
+              <label class="form-label">Project</label>
+              <input type="text" class="form-control" id="project" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Nama</label>
+              <input type="text" class="form-control" id="nama" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Ring</label>
+              <select class="form-control" id="ring" required>
+                <option value="">Loading Ring...</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Suspension</label>
+              <input type="text" class="form-control" id="suspend" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Deadend</label>
+              <input type="text" class="form-control" id="deadend" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Cordinat</label>
+              <input type="text" class="form-control" id="cordinat" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Keterangan</label>
+              <textarea class="form-control" id="keterangan" rows="1"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-archive-fill"></i> <span class="ms-2">Simpan</span>
+            </button>
+          </form>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {    
+
+            fetch("https://script.google.com/macros/s/AKfycby8XZW18p3ahyPzNOvLjN9hasVsCqpF8fsR2VhHcN925SEhpOLOH0HYP7Os9S5fd0mh/exec")
+                .then(response => response.json())
+                .then(data => {
+                    const ringDropdown = document.getElementById("ring");
+
+                    ringDropdown.innerHTML = '<option value="">Pilih Ring</option>';
+
+                    // Mengisi dropdown Ring
+                    data.ring.forEach(ring => {
+                        let option = document.createElement("option");
+                        option.value = ring;
+                        option.textContent = ring;
+                        ringDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error("Error:", error));
+        });
+
+        // Fungsi untuk menangani pengiriman form
+        document.getElementById("dataForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            
+            Swal.fire({
+                title: "Menyimpan data...",
+                text: "Harap tunggu sebentar.",
+                icon: "info",
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            let formData = {
+                project: document.getElementById('project').value,
+                nama: document.getElementById('nama').value,
+                ring: document.getElementById('ring').value,
+                suspend: document.getElementById('suspend').value,
+                deadend: document.getElementById('deadend').value,
+                cordinat: document.getElementById('cordinat').value,
+                keterangan: document.getElementById('keterangan').value.trim()
+            };
+            
+            fetch("https://script.google.com/macros/s/AKfycbzYIESOZKZRU8adfRtHSqsP9EYpa4-RVz04AFfmrZVSxnGzQWv2lkn_lWCXKqxI3OK0/exec", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                mode: 'no-cors',
+                body: JSON.stringify(formData)
+            }).then(() => {
+                Swal.fire("Sukses!", "Data berhasil disimpan.", "success");
+                document.getElementById("dataForm").reset();
+            }).catch(() => {
+                Swal.fire("Gagal!", "Terjadi kesalahan saat menyimpan data.", "error");
+            });
+        });
+
+        // Fitur sidebar untuk admin dan user
+        document.addEventListener("DOMContentLoaded", function () {
+    // Ambil role pengguna dari sessionStorage
+    const role = sessionStorage.getItem("loggedInUserRole") || "";
+
+    // Ambil elemen sidebar
+    const sidebar = document.getElementById("sidebar-menu");
+
+    // Daftar menu umum (untuk semua pengguna)
+    const commonMenu = `
+        <a class="nav-link" href="dashboard.html"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a class="nav-link" href="Form_QC_Ami.html"><i class="fas fa-file-alt"></i> Form QC AMI</a>
+        <a class="nav-link" href="Data_QC_Ami.html"><i class="fas fa-database"></i> Data QC AMI</a>
+    `;
+
+    // Daftar menu admin
+    const adminMenu = `
+        <a class="nav-link" href="manage-users.html"><i class="fas fa-users"></i> Kelola Pengguna</a>
+        <a class="nav-link" href="tambah-akun.html"><i class="fas fa-user-plus"></i> Tambah Akun</a>
+    `;
+
+    // Tombol logout
+    const logoutButton = `
+        <a href="#" id="logoutButton" class="nav-link"><i class="bi bi-box-arrow-left"></i> Log Out</a>
+    `;
+
+    // Gambar khusus untuk admin
+    const adminImage = `
+        <div class="w-100 text-center">
+            <a href="dashboard-admin.html"><img src="img/pln icon plus.png" alt="QC AMI" width="110" height="50" class="mb-3 mt-2"></a>
+        </div>
+    `;
+
+    // Memperbarui konten sidebar berdasarkan role
+    if (role.toLowerCase() === "admin") {
+        // Untuk admin, tambahkan gambar khusus di bagian atas
+        sidebar.innerHTML = adminImage + commonMenu + adminMenu + logoutButton;
+    } else {
+        // Untuk user biasa, tampilkan menu umum saja
+        sidebar.innerHTML = commonMenu + logoutButton;
+    }
+
+    // Fitur Log Out dengan Pengecekan Elemen
+    let logoutButtonElement = document.getElementById("logoutButton");
+    if (logoutButtonElement) {
+        logoutButtonElement.addEventListener("click", function (event) {
+            event.preventDefault(); // Mencegah redirect langsung
+            Swal.fire({
+                title: "Anda Yakin Ingin Log Out?",
+                text: "Anda Akan Keluar Dari Akun Anda.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Ya, Log Out",
+                cancelButtonText: "Batal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Hapus sesi login
+                    sessionStorage.removeItem("loggedInUser");
+                    sessionStorage.removeItem("loggedInUserRole");
+                    // Tampilkan notifikasi sukses
+                    Swal.fire({
+                        toast: true,
+                        position: "top-end",
+                        icon: "success",
+                        title: "Logout berhasil!",
+                        showConfirmButton: false,
+                        timer: 2500,
+                        timerProgressBar: true
+                    });
+                    // Redirect setelah notifikasi selesai
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 2500);
+                }
+            });
+        });
+    } else {
+        console.warn("Elemen #logoutButton tidak ditemukan!");
+    }
+});
+        </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const loggedInUserRole = sessionStorage.getItem("loggedInUserRole");
+        if (!loggedInUserRole) {
+            window.location.href = "index.html";
+        }
+
+        const dashboardLink = document.querySelector('.sidebar .nav-link[href="dashboard.html"]');
+        if (dashboardLink) {
+            dashboardLink.addEventListener("click", function (event) {
+                event.preventDefault();
+                if (loggedInUserRole.toLowerCase() === "admin") {
+                    window.location.href = "dashboard-admin.html";
+                } else {
+                    window.location.href = "dashboard.html";
+                }
+            });
+        }
+    });
+</script>
+</script>
+</body>
+
+</html>
